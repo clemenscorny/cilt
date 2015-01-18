@@ -1,7 +1,11 @@
+#include "cilt.h"
+
 #include "cilt.hpp"
     using cilt::Filter;
     using cilt::FilterTransversal;
-#include "cilt.h"
+    using cilt::FilterIIR;
+    using cilt::FilterForm1;
+    using cilt::FilterForm2;
 
 #include <vector>
     using std::vector;
@@ -37,7 +41,35 @@ void cilt_filtTrv_setNumerator(cilt_FiltTrv filter, float* b) {
     filter_cpp->setNumerator(b_vec);
 }
 
-float cilt_filtTrv_tick(cilt_FiltTrv filter, float data) {
-    FilterTransversal* filter_cpp = static_cast<FilterTransversal*>(filter);
+float cilt_filt_tick(cilt_Filt filter, float data) {
+    Filter* filter_cpp = static_cast<Filter*>(filter);
+    return filter_cpp->tick(data);
+}
+
+void cilt_filtIIR_init(cilt_FiltIIR filter, size_t order, float* a, float* b) {
+    FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
+    vector<float> a_vec(a, a+order);
+    vector<float> b_vec(b, b+order);
+    filter_cpp->init(a_vec, b_vec);
+}
+
+cilt_FiltForm1 cilt_filtForm1_new() {
+    FilterForm1* filter_cpp = new FilterForm1();
+    return filter_cpp;
+}
+
+float cilt_filtForm1_tick(cilt_FiltForm1 filter, float data) {
+    FilterForm1* filter_cpp = static_cast<FilterForm1*>(filter);
+    return filter_cpp->tick(data);
+}
+
+cilt_FiltForm2 cilt_filtForm2_new() {
+    FilterForm2* filter_cpp = new FilterForm2();
+    return filter_cpp;
+
+}
+
+float cilt_filtForm2_tick(cilt_FiltForm2 filter, float data) {
+    FilterForm2* filter_cpp = static_cast<FilterForm2*>(filter);
     return filter_cpp->tick(data);
 }

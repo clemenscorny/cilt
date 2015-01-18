@@ -100,8 +100,9 @@ void FilterIIR::setDenumerator(const std::vector<float>& a) {
 void FilterIIR::init(const std::vector<float>& a, const std::vector<float>& b) {
     if(a.size() != b.size()) {
         return;
+    } else if(a.size() != order_) {
+        resize(a.size());
     }
-    order_ = a.size();
     setNumerator(b);
     setDenumerator(a);
 }

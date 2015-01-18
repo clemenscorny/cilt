@@ -17,16 +17,34 @@ _libcilt.cilt_filt_setNumerator.argtypes = [ct.c_void_p,
         np.ctypeslib.ndpointer(dtype=np.float32)]
 _libcilt.cilt_filt_setNumerator.restype = None
 
+_libcilt.cilt_filt_tick.argtypes = [ct.c_void_p,
+        ct.c_float]
+_libcilt.cilt_filt_tick.restype = ct.c_float
+
 
 _libcilt.cilt_filtTrv_new.argtypes = None
 _libcilt.cilt_filtTrv_new.restype = ct.c_void_p
 
-_libcilt.cilt_filtTrv_tick.argtypes = [ct.c_void_p,
-        ct.c_float]
-_libcilt.cilt_filtTrv_tick.restype = ct.c_float
+
+_libcilt.cilt_filtIIR_init.argtypes = [ct.c_void_p,
+        ct.c_size_t,
+        np.ctypeslib.ndpointer(dtype=np.float32),
+        np.ctypeslib.ndpointer(dtype=np.float32)]
+_libcilt.cilt_filtIIR_init.restype = None
+
+
+_libcilt.cilt_filtForm1_new.argtypes = None
+_libcilt.cilt_filtForm1_new.restype = ct.c_void_p
+
+
+_libcilt.cilt_filtForm2_new.argtypes = None
+_libcilt.cilt_filtForm2_new.restype = ct.c_void_p
 
 class Filter(object):
     __metaclass__ = ABCMeta
+
+    def __del__(self):
+        _libcilt.cilt_filt_del(self.filter)
 
     def getOrder(self):
         return self.order
@@ -42,18 +60,25 @@ class Filter(object):
         b = np.asarray(b, dtype=np.float32)
         _libcilt.cilt_filt_setNumerator(self.filter, self.order, b)
 
-    @abstractmethod
     def tick(self, data):
-        pass
+        return _libcilt.cilt_filt_tick(self.filter, data)
+
+class FilterTransversal(Filter):
+    def __init__(self, b=None):
+        self.filter = _libcilt.cilt_filtTrv_new()
+        if b != None:
+            self.order = len(b)
+            self.setNumerator(b)
+        else:
+            self.order = 0
 
 class FilterIIR(Filter):
-    def __init__(self, a=None, b=None):
-        super(FilterIIR, self).__init__()
-        if a != None and b != None:
-            if len(a) == len(b):
-                self.order = len(a)
-                self.setNumerator(b)
-                self.setDenumerator(a)
+    def init(self, a=None, b=None):
+        if len(a) == len(b):
+            a = np.asarray(a, dtype=np.float32)
+            b = np.asarray(b, dtype=np.float32)
+            self.order = len(a)
+            _libcilt.cilt_filtIIR_init(self.filter, self.order, a, b)
 
     def getDenumerator(self):
         pass
@@ -69,17 +94,14 @@ class FilterIIR(Filter):
         b = np.asarray(b, dtype=np.float32)
         _libcilt.cilt_filt_setNumerator(self.filter, b)
 
-class FilterTransversal(Filter):
-    def __init__(self, b=None):
-        self.filter = _libcilt.cilt_filtTrv_new()
-        if b != None:
-            self.order = len(b)
-            self.setNumerator(b)
-        else:
-            self.order = 0
+class FilterForm1(FilterIIR):
+    def __init__(self, a=None, b=None):
+        self.filter = _libcilt.cilt_filtForm1_new()
+        if a != None and b != None:
+            self.init(a, b)
 
-    def __del__(self):
-        _libcilt.cilt_filt_del(self.filter)
-
-    def tick(self, data):
-        return _libcilt.cilt_filtTrv_tick(self.filter, data)
+class FilterForm2(FilterIIR):
+    def __init__(self, a=None, b=None):
+        self.filter = _libcilt.cilt_filtForm2_new()
+        if a != None and b != None:
+            self.init(a, b)
