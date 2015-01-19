@@ -120,6 +120,15 @@ TEST(FitlerTransversal, General) {
     for(size_t i = 0; i < size; ++i) {
         EXPECT_EQ(b[i], b_filter->at(i));
     }
+
+    b = vector<float>(size+2, 0.f);
+    filter.setCoeffs(b);
+    EXPECT_EQ(filter.getOrder(), size+2);
+    b_filter = filter.getNumerator();
+
+    for(size_t i = 0; i < filter.getOrder(); ++i) {
+        EXPECT_EQ(b_filter->at(i), 0.f);
+    }
 }
 
 TEST(FitlerTransversal, Tick) {

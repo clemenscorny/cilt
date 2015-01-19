@@ -35,6 +35,13 @@ cilt_FiltTrv cilt_filtTrv_new() {
     return filter_cpp;
 }
 
+void cilt_filtTrv_setCoeffs(cilt_FiltTrv filter, size_t order, float* b) {
+    FilterTransversal* filter_cpp = static_cast<FilterTransversal*>(filter);
+    vector<float> b_vec(b, b+order);
+    filter_cpp->setCoeffs(b_vec);
+}
+
+
 void cilt_filtTrv_setNumerator(cilt_FiltTrv filter, float* b) {
     FilterTransversal* filter_cpp = static_cast<FilterTransversal*>(filter);
     vector<float> b_vec(b, b+filter_cpp->getOrder());
@@ -46,11 +53,11 @@ float cilt_filt_tick(cilt_Filt filter, float data) {
     return filter_cpp->tick(data);
 }
 
-void cilt_filtIIR_init(cilt_FiltIIR filter, size_t order, float* a, float* b) {
+void cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b) {
     FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
     vector<float> a_vec(a, a+order);
     vector<float> b_vec(b, b+order);
-    filter_cpp->init(a_vec, b_vec);
+    filter_cpp->setCoeffs(a_vec, b_vec);
 }
 
 cilt_FiltForm1 cilt_filtForm1_new() {

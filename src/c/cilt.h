@@ -20,8 +20,9 @@ void cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b);
 float cilt_filt_tick(cilt_Filt filter, float data);
 
 cilt_FiltTrv cilt_filtTrv_new();
+void cilt_filtTrv_setCoeffs(cilt_FiltTrv filter, size_t order, float* b);
 
-void cilt_filtIIR_init(cilt_FiltIIR filter, size_t order, float* a, float* b);
+void cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b);
 
 cilt_FiltForm1 cilt_filtForm1_new();
 float cilt_filtForm1_tick(cilt_FiltForm1 filter, float data);

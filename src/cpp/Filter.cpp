@@ -29,7 +29,7 @@ const std::vector<float>* Filter::getNumerator() const {
 
 void Filter::setNumerator(const std::vector<float>& b) {
     if(b.size() != order_) {
-        resize(b.size());
+        return;
     }
 
     b_ = b;
@@ -45,6 +45,13 @@ FilterTransversal::FilterTransversal(std::size_t order)
 }
 
 FilterTransversal::~FilterTransversal() {
+}
+
+void FilterTransversal::setCoeffs(const std::vector<float>& b) {
+    if(b.size() != order_) {
+        resize(b.size());
+    }
+    setNumerator(b);
 }
 
 void FilterTransversal::resize(size_t size) {
@@ -97,7 +104,7 @@ void FilterIIR::setDenumerator(const std::vector<float>& a) {
     }
 }
 
-void FilterIIR::init(const std::vector<float>& a, const std::vector<float>& b) {
+void FilterIIR::setCoeffs(const std::vector<float>& a, const std::vector<float>& b) {
     if(a.size() != b.size()) {
         return;
     } else if(a.size() != order_) {

@@ -34,6 +34,8 @@ public:
     explicit FilterTransversal(std::size_t order);
     virtual ~FilterTransversal();
 
+    virtual void setCoeffs(const std::vector<float>& b);
+
     virtual void resize(size_t size);
     virtual float tick(float data);
 };
@@ -48,7 +50,7 @@ public:
 
     virtual const std::vector<float>* getDenumerator() const;
     virtual void setDenumerator(const std::vector<float>& a);
-    virtual void init(const std::vector<float> &a, const std::vector<float> &b);
+    virtual void setCoeffs(const std::vector<float>& a, const std::vector<float>& b);
 };
 
 class FilterForm1: public FilterIIR {
