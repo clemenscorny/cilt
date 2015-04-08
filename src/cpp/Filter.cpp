@@ -54,8 +54,8 @@ void FilterTransversal::setCoeffs(const std::vector<float>& b) {
     setNumerator(b);
 }
 
-void FilterTransversal::resize(size_t size) {
-    order_ = size;
+void FilterTransversal::resize(size_t order) {
+    order_ = order;
     x_.resize(order_);
 }
 
@@ -130,8 +130,8 @@ FilterForm1::FilterForm1(std::size_t order):
 FilterForm1::~FilterForm1() {
 }
 
-void FilterForm1::resize(size_t size) {
-    order_ = size;
+void FilterForm1::resize(size_t order) {
+    order_ = order;
     x_.resize(order_);
     y_.resize(order_);
 }
@@ -166,8 +166,8 @@ FilterForm2::FilterForm2(std::size_t order):
 FilterForm2::~FilterForm2() {
 }
 
-void FilterForm2::resize(size_t size) {
-    order_ = size;
+void FilterForm2::resize(size_t order) {
+    order_ = order;
     u_.resize(order_);
 }
 

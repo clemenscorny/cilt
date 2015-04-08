@@ -6,6 +6,9 @@
 
 namespace cilt {
 
+/**
+ * Shift register shaped like a ring buffer
+ */
 template <class T>
 class ShiftReg {
     std::size_t n_; /**< size of the buffer */
