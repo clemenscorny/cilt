@@ -1,12 +1,16 @@
 
 #include <algorithm>
     using std::fill;
+#include <iostream>
+    using std::cerr;
+    using std::endl;
 #include <vector>
     using std::vector;
 
 #include <gtest/gtest.h>
 
 #include "cilt.hpp"
+    using cilt::Excep;
     using cilt::ShiftReg;
     using cilt::FilterTransversal;
     using cilt::FilterIIR;
@@ -67,17 +71,48 @@ TEST(ShiftReg, Data) {
     size_t size = 10;
     ShiftReg<float> buff(size);
 
-    for(size_t i = 0; i < size; ++i) {
-        EXPECT_EQ(buff[i], 0.f);
+    for(size_t i = 0; i < 2*size; ++i) {
+        bool is_e_op = false;
+        bool is_e_at = false;
+        float val_op;
+        float val_at;
+
+        try {
+            val_op = buff[i];
+        } catch(const Excep &e) {
+            is_e_op = true;
+        }
+
+        try {
+            val_at = buff.at(i);
+        } catch(const Excep &e) {
+            is_e_at = true;
+        }
+
+        if(i < size) {
+            EXPECT_EQ(is_e_op, false);
+            EXPECT_EQ(is_e_at, false);
+            EXPECT_EQ(val_op, 0.f);
+            EXPECT_EQ(val_at, 0.f);
+        } else {
+            EXPECT_EQ(is_e_op, true);
+            EXPECT_EQ(is_e_at, true);
+        }
     }
 
     for(size_t i = 1; i < 2*size; ++i) {
         buff.add(i);
         for(size_t j = 0; j < size; ++j) {
-            if(j > i) {
-                EXPECT_EQ(buff[j], 0.f);
-            } else {
-                EXPECT_EQ(buff[j], i-j);
+            try {
+                if(j > i) {
+                    EXPECT_EQ(buff[j], 0.f);
+                    EXPECT_EQ(buff.at(j), 0.f);
+                } else {
+                    EXPECT_EQ(buff[j], i-j);
+                    EXPECT_EQ(buff.at(j), i-j);
+                }
+            } catch(const Excep &e) {
+                cerr << e.what() << endl;
             }
         }
     }
@@ -103,7 +138,7 @@ TEST(ShiftReg, Copy) {
     }
 }
 
-TEST(FitlerTransversal, General) {
+TEST(FilterTransversal, General) {
     size_t size = 5;
     FilterTransversal filter(size);
     const vector<float>* b_filter = filter.getNumerator();
@@ -131,7 +166,7 @@ TEST(FitlerTransversal, General) {
     }
 }
 
-TEST(FitlerTransversal, Tick) {
+TEST(FilterTransversal, Tick) {
     size_t size = 5;
     FilterTransversal filter(size);
     vector<float> x(size);
@@ -157,14 +192,14 @@ TEST(FitlerTransversal, Tick) {
     }
 }
 
-TEST(FitlerForm1, General) {
+TEST(FilterForm1, General) {
     size_t size = 5;
     FilterForm1 filter(size);
 
     iIRFilterGeneralTest(size, filter);
 }
 
-TEST(FitlerForm2, General) {
+TEST(FilterForm2, General) {
     size_t size = 5;
     FilterForm2 filter(size);
 

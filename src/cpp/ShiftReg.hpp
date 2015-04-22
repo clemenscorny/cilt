@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "Excep.hpp"
+
 namespace cilt {
 
 /**
@@ -102,8 +104,8 @@ ShiftReg<T>::~ShiftReg() {
 
 template <class T>
 T ShiftReg<T>::at(std::size_t ind) const {
-    if(ind > n_) {
-        // TODO: exception
+    if(ind >= n_) {
+        throw Excep("Index out of range!");
     }
 
     return data_[(pos_+ind)%n_];
