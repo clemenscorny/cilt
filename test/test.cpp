@@ -72,13 +72,13 @@ TEST(ShiftReg, Data) {
     size_t size = 10;
     ShiftReg<float> buff(size);
 
-    cilt_Errno errno = CILT_ERROR;
+    cilt_Errno errno = CILT_E_NONE;
     try {
         buff[size];
     } catch(const Excep &e) {
         errno = e.error();
     }
-    EXPECT_EQ(errno, CILT_IND_OUT_OF_RNG);
+    EXPECT_EQ(errno, CILT_E_IND_OUT_OF_RNG);
 
     for(size_t i = 0; i < 2*size; ++i) {
         bool is_e_op = false;

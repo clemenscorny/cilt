@@ -7,7 +7,7 @@
 namespace cilt {
 
 Excep::Excep() throw()
-    : error_(CILT_ERROR) {
+    : error_(CILT_E) {
 }
 
 Excep::Excep(const Excep& other) throw()

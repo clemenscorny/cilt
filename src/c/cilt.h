@@ -9,8 +9,9 @@ extern "C" {
 #include <stdlib.h>
 
 enum cilt_Errno {
-    CILT_ERROR,
-    CILT_IND_OUT_OF_RNG
+    CILT_E_NONE = 0,
+    CILT_E,
+    CILT_E_IND_OUT_OF_RNG
 };
 
 typedef void* cilt_Filt;
