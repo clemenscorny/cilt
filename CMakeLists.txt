@@ -9,7 +9,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 option(cilt_build_tests "Build all of cilt's tests." ON)
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
-option(ENABLE_TESTING_COVERAGE "Enable generating code coverage report." OFF)
 
 add_subdirectory(src)
 
