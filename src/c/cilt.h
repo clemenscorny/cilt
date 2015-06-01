@@ -8,6 +8,11 @@ extern "C" {
 
 #include <stdlib.h>
 
+enum cilt_Errno {
+    CILT_ERROR,
+    CILT_IND_OUT_OF_RNG
+};
+
 typedef void* cilt_Filt;
 typedef void* cilt_FiltIIR;
 typedef void* cilt_FiltTrv;

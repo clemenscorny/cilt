@@ -5,6 +5,7 @@
 #include <iterator>
 
 #include "Excep.hpp"
+#include "cilt.h"
 
 namespace cilt {
 
@@ -105,7 +106,7 @@ ShiftReg<T>::~ShiftReg() {
 template <class T>
 T ShiftReg<T>::at(std::size_t ind) const {
     if(ind >= n_) {
-        throw Excep("Index out of range!");
+        throw Excep("Index out of range!", CILT_IND_OUT_OF_RNG);
     }
 
     return data_[(pos_+ind)%n_];

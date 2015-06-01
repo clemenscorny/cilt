@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 
+#include "cilt.h"
 #include "cilt.hpp"
     using cilt::Excep;
     using cilt::ShiftReg;
@@ -70,6 +71,14 @@ TEST(ShiftReg, ConstAndDestructor) {
 TEST(ShiftReg, Data) {
     size_t size = 10;
     ShiftReg<float> buff(size);
+
+    cilt_Errno errno = CILT_ERROR;
+    try {
+        buff[size];
+    } catch(const Excep &e) {
+        errno = e.error();
+    }
+    EXPECT_EQ(errno, CILT_IND_OUT_OF_RNG);
 
     for(size_t i = 0; i < 2*size; ++i) {
         bool is_e_op = false;
