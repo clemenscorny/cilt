@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include"cilt.h"
+#include "Excep.hpp"
+
 namespace cilt {
 
 
@@ -29,6 +32,7 @@ const std::vector<float>* Filter::getNumerator() const {
 
 void Filter::setNumerator(const std::vector<float>& b) {
     if(b.size() != order_) {
+        throw Excep("Input array has a wrong size!", CILT_E_WRONG_SIZE);
         return;
     }
 
@@ -90,6 +94,7 @@ const std::vector<float>* FilterIIR::getDenumerator() const {
 
 void FilterIIR::setDenumerator(const std::vector<float>& a) {
     if(a.size() != order_) {
+        throw Excep("Input arrays has a wrong size!", CILT_E_DIFF_SIZES);
         return;
     }
 
@@ -106,6 +111,7 @@ void FilterIIR::setDenumerator(const std::vector<float>& a) {
 
 void FilterIIR::setCoeffs(const std::vector<float>& a, const std::vector<float>& b) {
     if(a.size() != b.size()) {
+        throw Excep("Input arrays have different sizes!", CILT_E_DIFF_SIZES);
         return;
     } else if(a.size() != order_) {
         resize(a.size());

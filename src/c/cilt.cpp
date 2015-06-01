@@ -6,6 +6,8 @@
     using cilt::FilterIIR;
     using cilt::FilterForm1;
     using cilt::FilterForm2;
+#include "Excep.hpp"
+    using cilt::Excep;
 
 #include <vector>
     using std::vector;
@@ -23,11 +25,18 @@ void cilt_filt_getNumerator(cilt_Filt filter, float* b) {
     }
 }
 
-void cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b) {
+cilt_Errno cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b) {
     Filter* filter_cpp = static_cast<Filter*>(filter);
     vector<float> b_vec(b, b+order);
+    cilt_Errno errno = CILT_E_NONE;
 
-    filter_cpp->setNumerator(b_vec);
+    try {
+        filter_cpp->setNumerator(b_vec);
+    } catch(const Excep &e) {
+        errno = e.errno();
+    }
+
+    return errno;
 }
 
 cilt_FiltTrv cilt_filtTrv_new() {
@@ -53,11 +62,19 @@ float cilt_filt_tick(cilt_Filt filter, float data) {
     return filter_cpp->tick(data);
 }
 
-void cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b) {
+cilt_Errno cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b) {
     FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
     vector<float> a_vec(a, a+order);
     vector<float> b_vec(b, b+order);
-    filter_cpp->setCoeffs(a_vec, b_vec);
+    cilt_Errno errno = CILT_E_NONE;
+
+    try {
+        filter_cpp->setCoeffs(a_vec, b_vec);
+    } catch(const Excep &e) {
+        errno = e.errno();
+    }
+
+    return errno;
 }
 
 cilt_FiltForm1 cilt_filtForm1_new() {

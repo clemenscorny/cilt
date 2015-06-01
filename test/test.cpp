@@ -76,7 +76,7 @@ TEST(ShiftReg, Data) {
     try {
         buff[size];
     } catch(const Excep &e) {
-        errno = e.error();
+        errno = e.errno();
     }
     EXPECT_EQ(errno, CILT_E_IND_OUT_OF_RNG);
 

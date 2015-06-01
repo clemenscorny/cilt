@@ -15,12 +15,12 @@ protected:
 public:
     Excep() throw();
     Excep(const Excep& other) throw();
-    Excep(const char* msg, cilt_Errno error = CILT_E) throw();
-    Excep(const std::string& msg, cilt_Errno error = CILT_E) throw();
+    Excep(const char* msg, cilt_Errno errno = CILT_E) throw();
+    Excep(const std::string& msg, cilt_Errno errno = CILT_E) throw();
     virtual ~Excep() throw();
     const Excep& operator=(const Excep& other) throw();
     virtual const char* what() const throw();
-    virtual cilt_Errno error() const throw();
+    virtual cilt_Errno errno() const throw();
 };
 
 }

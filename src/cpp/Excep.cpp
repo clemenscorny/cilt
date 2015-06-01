@@ -42,7 +42,7 @@ const char* Excep::what() const throw() {
     return what_.c_str();
 }
 
-cilt_Errno Excep::error() const throw() {
+cilt_Errno Excep::errno() const throw() {
     return error_;
 }
 
