@@ -3,6 +3,7 @@ project(cilt)
 cmake_minimum_required(VERSION 2.6)
 
 find_package(Doxygen)
+find_package(OpenMP)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -12,6 +13,13 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 option(cilt_build_tests "Build all of cilt's tests." ON)
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
 option(BUILD_DOCUMENTATION "Create Doxygen documentation" ${DOXYGEN_FOUND})
+option(WITH_OPENMP "Build with OpenMP support for parallelization" ${OPENMP_FOUND})
+
+if(WITH_OPENMP)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    add_definitions(-DWITH_OPENMP)
+endif()
 
 add_subdirectory(src)
 

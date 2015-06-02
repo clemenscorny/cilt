@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # this example is a changed copy from
 # http://stackoverflow.com/questions/4152457/parameters-for-low-pass-fir-filter-using-scipy
 

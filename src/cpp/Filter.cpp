@@ -2,6 +2,10 @@
 
 #include <vector>
 
+#ifdef WITH_OPENMP
+    #include <omp.h>
+#endif // WITH_OPENMP
+
 #include"cilt.h"
 #include "Excep.hpp"
 
@@ -66,6 +70,9 @@ float FilterTransversal::tick(float data) {
     x_.add(data);
     float result = 0;
 
+#ifdef WITH_OPENMP
+    #pragma omp parallel for reduction(+:result)
+#endif // WITH_OPENMP
     for(std::size_t i = 0; i < this->order_; ++i) {
         result += b_[i]*x_[i];
     }
