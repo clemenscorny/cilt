@@ -10,17 +10,17 @@ namespace cilt {
 
 class Excep: public std::exception {
 protected:
-    enum cilt_Errno error_;
+    int error_;
     std::string what_;
 public:
     Excep() throw();
     Excep(const Excep& other) throw();
-    Excep(const char* msg, cilt_Errno errno = CILT_E) throw();
-    Excep(const std::string& msg, cilt_Errno errno = CILT_E) throw();
+    Excep(const char* msg, int errno = CILT_E) throw();
+    Excep(const std::string& msg, int errno = CILT_E) throw();
     virtual ~Excep() throw();
     const Excep& operator=(const Excep& other) throw();
     virtual const char* what() const throw();
-    virtual cilt_Errno errno() const throw();
+    virtual int errno() const throw();
 };
 
 }

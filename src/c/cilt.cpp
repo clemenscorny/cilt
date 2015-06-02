@@ -25,10 +25,10 @@ void cilt_filt_getNumerator(cilt_Filt filter, float* b) {
     }
 }
 
-cilt_Errno cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b) {
+int cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b) {
     Filter* filter_cpp = static_cast<Filter*>(filter);
     vector<float> b_vec(b, b+order);
-    cilt_Errno errno = CILT_E_NONE;
+    int errno = CILT_E_NONE;
 
     try {
         filter_cpp->setNumerator(b_vec);
@@ -51,10 +51,18 @@ void cilt_filtTrv_setCoeffs(cilt_FiltTrv filter, size_t order, float* b) {
 }
 
 
-void cilt_filtTrv_setNumerator(cilt_FiltTrv filter, float* b) {
+int cilt_filtTrv_setNumerator(cilt_FiltTrv filter, float* b) {
     FilterTransversal* filter_cpp = static_cast<FilterTransversal*>(filter);
     vector<float> b_vec(b, b+filter_cpp->getOrder());
-    filter_cpp->setNumerator(b_vec);
+    int errno = CILT_E_NONE;
+
+    try {
+        filter_cpp->setNumerator(b_vec);
+    } catch(const Excep &e) {
+        errno = e.errno();
+    }
+
+    return errno;
 }
 
 float cilt_filt_tick(cilt_Filt filter, float data) {
@@ -62,11 +70,33 @@ float cilt_filt_tick(cilt_Filt filter, float data) {
     return filter_cpp->tick(data);
 }
 
-cilt_Errno cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b) {
+void cilt_filtIIR_getDenumerator(cilt_FiltIIR filter, float* a) {
+    FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
+    const vector<float>* a_vec = filter_cpp->getDenumerator();
+    for(size_t i = 0; i < filter_cpp->getOrder(); ++i) {
+        a[i] = a_vec->at(i);
+    }
+}
+
+int cilt_filtIIR_setDenumerator(cilt_FiltIIR filter, size_t order, float* a) {
+    FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
+    vector<float> a_vec(a, a+order);
+    int errno = CILT_E_NONE;
+
+    try {
+        filter_cpp->setDenumerator(a_vec);
+    } catch(const Excep &e) {
+        errno = e.errno();
+    }
+
+    return errno;
+}
+
+int cilt_filtIIR_setCoeffs(cilt_FiltIIR filter, size_t order, float* a, float* b) {
     FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
     vector<float> a_vec(a, a+order);
     vector<float> b_vec(b, b+order);
-    cilt_Errno errno = CILT_E_NONE;
+    int errno = CILT_E_NONE;
 
     try {
         filter_cpp->setCoeffs(a_vec, b_vec);

@@ -33,7 +33,6 @@ const std::vector<float>* Filter::getNumerator() const {
 void Filter::setNumerator(const std::vector<float>& b) {
     if(b.size() != order_) {
         throw Excep("Input array has a wrong size!", CILT_E_WRONG_SIZE);
-        return;
     }
 
     b_ = b;
@@ -94,13 +93,17 @@ const std::vector<float>* FilterIIR::getDenumerator() const {
 
 void FilterIIR::setDenumerator(const std::vector<float>& a) {
     if(a.size() != order_) {
-        throw Excep("Input arrays has a wrong size!", CILT_E_DIFF_SIZES);
-        return;
+        throw Excep("Input array has a wrong size!", CILT_E_WRONG_SIZE);
     }
 
     a_ = a;
 
-    if(a[0] != 1) {
+    if(a[0] != 1.) {
+        if(a[0] == 0.) {
+            throw Excep("First coefficient of denumerator polynom mustn't be 0!",
+                    CILT_E_A_0);
+        }
+
         float a0 = a[0];
         std::transform(a_.begin(), a_.end(), a_.begin(),
         std::bind2nd(std::divides<float>(), a0));
@@ -112,10 +115,10 @@ void FilterIIR::setDenumerator(const std::vector<float>& a) {
 void FilterIIR::setCoeffs(const std::vector<float>& a, const std::vector<float>& b) {
     if(a.size() != b.size()) {
         throw Excep("Input arrays have different sizes!", CILT_E_DIFF_SIZES);
-        return;
     } else if(a.size() != order_) {
         resize(a.size());
     }
+
     setNumerator(b);
     setDenumerator(a);
 }

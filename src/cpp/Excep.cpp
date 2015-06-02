@@ -16,12 +16,12 @@ Excep::Excep(const Excep& other) throw()
       error_(other.error_) {
 }
 
-Excep::Excep(const char* msg, cilt_Errno error) throw()
+Excep::Excep(const char* msg, int error) throw()
     : what_(msg),
       error_(error) {
 }
 
-Excep::Excep(const std::string& msg, cilt_Errno error) throw()
+Excep::Excep(const std::string& msg, int error) throw()
     : what_(msg),
       error_(error) {
 }
@@ -42,7 +42,7 @@ const char* Excep::what() const throw() {
     return what_.c_str();
 }
 
-cilt_Errno Excep::errno() const throw() {
+int Excep::errno() const throw() {
     return error_;
 }
 

@@ -72,7 +72,7 @@ TEST(ShiftReg, Data) {
     size_t size = 10;
     ShiftReg<float> buff(size);
 
-    cilt_Errno errno = CILT_E_NONE;
+    int errno = CILT_E_NONE;
     try {
         buff[size];
     } catch(const Excep &e) {
