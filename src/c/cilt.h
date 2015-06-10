@@ -27,6 +27,7 @@ void cilt_filt_del(cilt_Filt filter);
 void cilt_filt_getNumerator(cilt_Filt filter, float* b);
 int cilt_filt_setNumerator(cilt_Filt filter, size_t order, float* b);
 float cilt_filt_tick(cilt_Filt filter, float data);
+void cilt_filt_lfilter(cilt_Filt filter, float* ret, size_t len, float *data);
 
 cilt_FiltTrv cilt_filtTrv_new();
 void cilt_filtTrv_setCoeffs(cilt_FiltTrv filter, size_t order, float* b);

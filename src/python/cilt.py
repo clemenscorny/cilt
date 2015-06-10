@@ -21,6 +21,12 @@ _libcilt.cilt_filt_tick.argtypes = [ct.c_void_p,
         ct.c_float]
 _libcilt.cilt_filt_tick.restype = ct.c_float
 
+_libcilt.cilt_filt_lfilter.argtypes = [ct.c_void_p,
+        np.ctypeslib.ndpointer(dtype=np.float32),
+        ct.c_size_t,
+        np.ctypeslib.ndpointer(dtype=np.float32)]
+_libcilt.cilt_filt_lfilter.restype = None
+
 
 _libcilt.cilt_filtTrv_new.argtypes = None
 _libcilt.cilt_filtTrv_new.restype = ct.c_void_p
@@ -103,6 +109,12 @@ class Filter(object):
 
     def tick(self, data):
         return _libcilt.cilt_filt_tick(self.filter, data)
+
+    def lfilter(self, data):
+        data = np.asarray(data, dtype=np.float32)
+        ret = np.empty_like(data)
+        _libcilt.cilt_filt_lfilter(self.filter, ret, len(data), data)
+        return ret
 
 class FilterTransversal(Filter):
     def __init__(self, b=None):

@@ -6,6 +6,7 @@
 from scipy import signal
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 import cilt
 
@@ -23,10 +24,22 @@ x = x1 + 2 * np.random.rand(m)  # signal + noise
 filt = cilt.FilterTransversal(b)
 y = np.zeros(len(x))
 
+start_cilt_tick = time.time()
 for i in range(len(x)):
     y[i] = filt.tick(x[i])
+end_cilt_tick = time.time()
 
+start_cilt_lfilter = time.time()
+z = filt.lfilter(x)
+end_cilt_lfilter = time.time()
+
+start_scipy_lfilter = time.time()
 y_scipy = signal.lfilter(b, a, x)
+end_scipy_lfilter = time.time()
+
+print('cilt.tick:', end_cilt_tick-start_cilt_tick)
+print('cilt.lfilter:', end_cilt_lfilter-start_cilt_lfilter)
+print('scipy.lfilter:', end_scipy_lfilter-start_scipy_lfilter)
 
 plt.subplot(121)
 plt.plot(n / fs, x, label='Noisy Data')

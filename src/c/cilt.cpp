@@ -70,6 +70,14 @@ float cilt_filt_tick(cilt_Filt filter, float data) {
     return filter_cpp->tick(data);
 }
 
+void cilt_filt_lfilter(cilt_Filt filter, float* ret, size_t len, float *data) {
+    Filter* filter_cpp = static_cast<Filter*>(filter);
+
+    for(size_t i = 0; i < len; ++i) {
+        ret[i] = filter_cpp->tick(data[i]);
+    }
+}
+
 void cilt_filtIIR_getDenumerator(cilt_FiltIIR filter, float* a) {
     FilterIIR* filter_cpp = static_cast<FilterIIR*>(filter);
     const vector<float>* a_vec = filter_cpp->getDenumerator();
