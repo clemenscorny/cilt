@@ -19,7 +19,7 @@ Filter::Filter()
 
 Filter::Filter(std::size_t order)
     : order_(order),
-      b_(std::vector<float>(order)) {
+      b_(std::vector<float>(order+1)) {
 }
 
 
@@ -35,7 +35,7 @@ const std::vector<float>* Filter::getNumerator() const {
 }
 
 void Filter::setNumerator(const std::vector<float>& b) {
-    if(b.size() != order_) {
+    if((b.size()-1) != order_) {
         throw Excep("Input array has a wrong size!", CILT_E_WRONG_SIZE);
     }
 
@@ -48,22 +48,22 @@ FilterTransversal::FilterTransversal()
 
 FilterTransversal::FilterTransversal(std::size_t order)
     : Filter(order),
-      x_(ShiftReg<float>(order)) {
+      x_(ShiftReg<float>(order+1)) {
 }
 
 FilterTransversal::~FilterTransversal() {
 }
 
 void FilterTransversal::setCoeffs(const std::vector<float>& b) {
-    if(b.size() != order_) {
-        resize(b.size());
+    if((b.size()-1) != order_) {
+        resize(b.size()-1);
     }
     setNumerator(b);
 }
 
 void FilterTransversal::resize(size_t order) {
     order_ = order;
-    x_.resize(order_);
+    x_.resize(order_+1);
 }
 
 float FilterTransversal::tick(float data) {
@@ -73,7 +73,7 @@ float FilterTransversal::tick(float data) {
 #ifdef WITH_OPENMP
     #pragma omp parallel for reduction(+:result)
 #endif // WITH_OPENMP
-    for(std::size_t i = 0; i < this->order_; ++i) {
+    for(std::size_t i = 0; i <= this->order_; ++i) {
         result += b_[i]*x_[i];
     }
 
@@ -87,7 +87,7 @@ FilterIIR::FilterIIR()
 
 FilterIIR::FilterIIR(std::size_t order)
     : Filter(order),
-      a_(std::vector<float>(order)) {
+      a_(std::vector<float>(order+1)) {
 }
 
 
@@ -99,7 +99,7 @@ const std::vector<float>* FilterIIR::getDenumerator() const {
 }
 
 void FilterIIR::setDenumerator(const std::vector<float>& a) {
-    if(a.size() != order_) {
+    if((a.size()-1) != order_) {
         throw Excep("Input array has a wrong size!", CILT_E_WRONG_SIZE);
     }
 
@@ -122,8 +122,8 @@ void FilterIIR::setDenumerator(const std::vector<float>& a) {
 void FilterIIR::setCoeffs(const std::vector<float>& a, const std::vector<float>& b) {
     if(a.size() != b.size()) {
         throw Excep("Input arrays have different sizes!", CILT_E_DIFF_SIZES);
-    } else if(a.size() != order_) {
-        resize(a.size());
+    } else if((a.size()-1) != order_) {
+        resize(a.size()-1);
     }
 
     setNumerator(b);
@@ -138,8 +138,8 @@ FilterForm1::FilterForm1()
 
 FilterForm1::FilterForm1(std::size_t order):
         FilterIIR(order),
-        x_(ShiftReg<float>(order)),
-        y_(ShiftReg<float>(order)) {
+        x_(ShiftReg<float>(order+1)),
+        y_(ShiftReg<float>(order+1)) {
 }
 
 
@@ -148,15 +148,15 @@ FilterForm1::~FilterForm1() {
 
 void FilterForm1::resize(size_t order) {
     order_ = order;
-    x_.resize(order_);
-    y_.resize(order_);
+    x_.resize(order_+1);
+    y_.resize(order_+1);
 }
 
 float FilterForm1::tick(float data) {
     x_.add(data);
     float res = 0;
 
-    for(std::size_t i = 0; i < this->order_; ++i) {
+    for(std::size_t i = 0; i <= this->order_; ++i) {
         res += b_[i]*x_[i];
         if(i != 0) {
             res -= a_[i]*y_[i-1];
@@ -175,7 +175,7 @@ FilterForm2::FilterForm2()
 
 FilterForm2::FilterForm2(std::size_t order):
         FilterIIR(order),
-        u_(ShiftReg<float>(order)) {
+        u_(ShiftReg<float>(order+1)) {
 }
 
 
@@ -184,14 +184,14 @@ FilterForm2::~FilterForm2() {
 
 void FilterForm2::resize(size_t order) {
     order_ = order;
-    u_.resize(order_);
+    u_.resize(order_+1);
 }
 
 float FilterForm2::tick(float data) {
     float res_a = data;
     float res_b = 0;
 
-    for(std::size_t i = 1; i < this->order_; ++i) {
+    for(std::size_t i = 1; i <= this->order_; ++i) {
         res_a -= a_[i]*u_[i-1];
         res_b += b_[i]*u_[i-1];
     }

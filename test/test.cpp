@@ -18,19 +18,20 @@
     using cilt::FilterForm1;
     using cilt::FilterForm2;
 
-static void iIRFilterGeneralTest(size_t size, FilterIIR& filter);
+static void iIRFilterGeneralTest(size_t order, FilterIIR& filter);
+static void iIRFilterTickTest(FilterIIR& filter);
 
-static void iIRFilterGeneralTest(size_t size, FilterIIR& filter) {
+static void iIRFilterGeneralTest(size_t order, FilterIIR& filter) {
     const vector<float>* b_filter = filter.getNumerator();
     const vector<float>* a_filter = filter.getDenumerator();
-    vector<float> a(size);
-    vector<float> b(size);
+    vector<float> a(order+1);
+    vector<float> b(order+1);
 
-    for(size_t i = 0; i < size; ++i) {
+    for(size_t i = 0; i <= order; ++i) {
         EXPECT_EQ(a_filter->at(i), 0.f);
         EXPECT_EQ(b_filter->at(i), 0.f);
         a[i] = 2.f*(i+1.f);
-        b[i] = 2.f*(size-i);
+        b[i] = 2.f*(order+1-i);
     }
     a[0] = 1.f;
 
@@ -39,7 +40,7 @@ static void iIRFilterGeneralTest(size_t size, FilterIIR& filter) {
     b_filter = filter.getNumerator();
     a_filter = filter.getDenumerator();
 
-    for(size_t i = 0; i < size; ++i) {
+    for(size_t i = 0; i < order+1; ++i) {
         EXPECT_EQ(a[i], a_filter->at(i));
         EXPECT_EQ(b[i], b_filter->at(i));
     }
@@ -48,7 +49,7 @@ static void iIRFilterGeneralTest(size_t size, FilterIIR& filter) {
     filter.setDenumerator(a);
     a_filter = filter.getDenumerator();
 
-    for(size_t i = 0; i < size; ++i) {
+    for(size_t i = 0; i < order+1; ++i) {
         if(i != 0) {
             EXPECT_EQ(a[i], 2.f*a_filter->at(i));
         } else {
@@ -59,9 +60,9 @@ static void iIRFilterGeneralTest(size_t size, FilterIIR& filter) {
 }
 
 static void iIRFilterTickTest(FilterIIR& filter) {
-    size_t size = 3;
-    vector<float> a(size);
-    vector<float> b(size);
+    size_t order = 2;
+    vector<float> a(order+1);
+    vector<float> b(order+1);
 
     a[0] = 1.;
     a[1] = 0.;
@@ -71,6 +72,8 @@ static void iIRFilterTickTest(FilterIIR& filter) {
     b[2] = 3.;
 
     filter.setCoeffs(a, b);
+
+    EXPECT_EQ(2, filter.getOrder());
 
      EXPECT_EQ(1., filter.tick(1.));
      EXPECT_EQ(3., filter.tick(1.));
@@ -169,12 +172,15 @@ TEST(ShiftReg, Copy) {
 }
 
 TEST(FilterTransversal, General) {
-    size_t size = 5;
-    FilterTransversal filter(size);
+    size_t order = 4;
+    FilterTransversal filter(order);
     const vector<float>* b_filter = filter.getNumerator();
-    vector<float> b(size);
+    vector<float> b(order+1);
 
-    for(size_t i = 0; i < size; ++i) {
+    EXPECT_EQ(filter.getOrder(), 4);
+    EXPECT_EQ(b_filter->size(), 5);
+
+    for(size_t i = 0; i <= order; ++i) {
         EXPECT_EQ(b_filter->at(i), 0.f);
         b[i] = i+1.f;
     }
@@ -182,58 +188,55 @@ TEST(FilterTransversal, General) {
     filter.setNumerator(b);
     b_filter = filter.getNumerator();
 
-    for(size_t i = 0; i < size; ++i) {
+    for(size_t i = 0; i <= order; ++i) {
         EXPECT_EQ(b[i], b_filter->at(i));
     }
 
-    b = vector<float>(size+2, 0.f);
+    b = vector<float>(order+1+2, 0.f);
     filter.setCoeffs(b);
-    EXPECT_EQ(filter.getOrder(), size+2);
+    EXPECT_EQ(filter.getOrder(), order+2);
     b_filter = filter.getNumerator();
 
-    for(size_t i = 0; i < filter.getOrder(); ++i) {
+    for(size_t i = 0; i <= filter.getOrder(); ++i) {
         EXPECT_EQ(b_filter->at(i), 0.f);
     }
 }
 
 TEST(FilterTransversal, Tick) {
-    size_t size = 5;
-    FilterTransversal filter(size);
-    vector<float> x(size);
-    vector<float> b(size);
+    size_t order = 4;
+    FilterTransversal filter(order);
+    vector<float> b(order+1);
 
-    for(size_t i = 0; i < size; ++i) {
-        x[i] = i+1.f;
+    for(size_t i = 0; i <= order; ++i) {
         b[i] = 1.f;
     }
 
     filter.setNumerator(b);
 
-    for(size_t i = 0; i < 2*size; ++i) {
-        float res;
-        float temp = (i%size)+1;
-        if(i < size) {
-            res = filter.tick(x[i]);
-            EXPECT_EQ(res, temp*(temp+1.f)/2.f);
-        } else {
-            res = filter.tick(0.f);
-            EXPECT_EQ(res, size*(size+1)/2-temp*(temp+1.f)/2.f);
-        }
-    }
-}
+    EXPECT_EQ(filter.tick(0.f), 0.f);
+    EXPECT_EQ(filter.tick(1.f), 1.f);
+    EXPECT_EQ(filter.tick(2.f), 3.f);
+    EXPECT_EQ(filter.tick(3.f), 6.f);
+    EXPECT_EQ(filter.tick(4.f), 10.f);
+    EXPECT_EQ(filter.tick(0.f), 10.f);
+    EXPECT_EQ(filter.tick(0.f), 9.f);
+    EXPECT_EQ(filter.tick(0.f), 7.f);
+    EXPECT_EQ(filter.tick(0.f), 4.f);
+    EXPECT_EQ(filter.tick(0.f), 0.f);
+ }
 
 TEST(FilterForm1, General) {
-    size_t size = 5;
-    FilterForm1 filter(size);
+    size_t order = 4;
+    FilterForm1 filter(order);
 
-    iIRFilterGeneralTest(size, filter);
+    iIRFilterGeneralTest(order, filter);
 }
 
 TEST(FilterForm2, General) {
-    size_t size = 5;
-    FilterForm2 filter(size);
+    size_t order = 4;
+    FilterForm2 filter(order);
 
-    iIRFilterGeneralTest(size, filter);
+    iIRFilterGeneralTest(order, filter);
 }
 
 TEST(FilterForm1, Tick) {
