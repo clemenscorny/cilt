@@ -159,7 +159,7 @@ float FilterForm1::tick(float data) {
     for(std::size_t i = 0; i < this->order_; ++i) {
         res += b_[i]*x_[i];
         if(i != 0) {
-            res -= a_[i]*y_[i];
+            res -= a_[i]*y_[i-1];
         }
     }
 
@@ -192,8 +192,8 @@ float FilterForm2::tick(float data) {
     float res_b = 0;
 
     for(std::size_t i = 1; i < this->order_; ++i) {
-        res_a -= a_[i]*u_[i];
-        res_b += b_[i]*u_[i];
+        res_a -= a_[i]*u_[i-1];
+        res_b += b_[i]*u_[i-1];
     }
 
     u_.add(res_a);

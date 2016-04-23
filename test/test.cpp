@@ -58,6 +58,27 @@ static void iIRFilterGeneralTest(size_t size, FilterIIR& filter) {
     }
 }
 
+static void iIRFilterTickTest(FilterIIR& filter) {
+    size_t size = 3;
+    vector<float> a(size);
+    vector<float> b(size);
+
+    a[0] = 1.;
+    a[1] = 0.;
+    a[2] = 1.;
+    b[0] = 1.;
+    b[1] = 2.;
+    b[2] = 3.;
+
+    filter.setCoeffs(a, b);
+
+     EXPECT_EQ(1., filter.tick(1.));
+     EXPECT_EQ(3., filter.tick(1.));
+     EXPECT_EQ(4., filter.tick(0.));
+     EXPECT_EQ(0., filter.tick(0.));
+     EXPECT_EQ(-4., filter.tick(0.));
+}
+
 TEST(ShiftReg, ConstAndDestructor) {
     ShiftReg<float> buff_1;
     EXPECT_EQ(buff_1.size(), 0);
@@ -213,4 +234,16 @@ TEST(FilterForm2, General) {
     FilterForm2 filter(size);
 
     iIRFilterGeneralTest(size, filter);
+}
+
+TEST(FilterForm1, Tick) {
+    FilterForm1 filter;
+
+    iIRFilterTickTest(filter);
+}
+
+TEST(FilterForm2, Tick) {
+    FilterForm2 filter;
+
+    iIRFilterTickTest(filter);
 }

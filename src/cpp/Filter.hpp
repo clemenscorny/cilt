@@ -14,6 +14,7 @@ namespace cilt {
 class Filter
 {
 protected:
+    // FIXME oder_ --> order_ - 1
     std::size_t order_; /**< filter order */
     std::vector<float> b_; /**< numerator coefficients */
 public:
